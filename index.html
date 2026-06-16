@@ -162,6 +162,15 @@
               <button id="copyShareBtn">공유 안내 만들기</button>
             </div>
             <textarea id="shareBox" readonly placeholder="공유 안내가 여기에 표시됩니다."></textarea>
+            <form class="comment-form" id="commentForm">
+              <select id="commentAuthor" aria-label="작성자">
+                <option value="엄마">엄마</option>
+                <option value="아빠">아빠</option>
+                <option value="아이">아이</option>
+              </select>
+              <input id="commentText" placeholder="가족 코멘트 입력" />
+              <button class="primary" type="submit">추가</button>
+            </form>
             <div class="comment-list" id="familyComments"></div>
           </section>
 

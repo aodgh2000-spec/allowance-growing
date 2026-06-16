@@ -8,14 +8,12 @@ const defaults = {
   goal: "스케이트보드",
   goalAmount: 50000,
   reward: "가족 보드게임 밤",
-  comments: [
-    { name: "엄마", text: "이번 주 간식비를 스스로 확인한 점이 좋았어." },
-    { name: "아빠", text: "목표까지 절반 가까이 왔네. 필요한 소비와 원하는 소비를 같이 나눠보자." },
-  ],
+  comments: [],
   transactions: [],
 };
 
 const seedTransactionMemos = new Set(["지난달 잔액 이월", "아이스크림 구매", "심부름 용돈", "문구 세트", "이번 달 용돈"]);
+const seedCommentTexts = new Set(["이번 주 간식비를 스스로 확인한 점이 좋았어.", "목표까지 절반 가까이 왔네. 필요한 소비와 원하는 소비를 같이 나눠보자."]);
 
 let state = loadState();
 let cloud = {
@@ -37,6 +35,7 @@ function loadState() {
   try {
     const parsed = { ...structuredClone(defaults), ...JSON.parse(saved) };
     parsed.transactions = (parsed.transactions || []).filter((item) => !isSeedTransaction(item));
+    parsed.comments = (parsed.comments || []).filter((item) => !isSeedComment(item));
     return parsed;
   } catch {
     return structuredClone(defaults);
@@ -45,6 +44,10 @@ function loadState() {
 
 function isSeedTransaction(item) {
   return item && seedTransactionMemos.has(item.memo) && String(item.date || "").startsWith("2026-06-");
+}
+
+function isSeedComment(item) {
+  return item && seedCommentTexts.has(item.text);
 }
 
 function saveState() {
@@ -314,8 +317,26 @@ function renderCategories() {
 }
 
 function renderComments() {
-  document.getElementById("familyComments").innerHTML = state.comments
-    .map((comment) => `<div class="comment"><strong>${comment.name}</strong><span>${comment.text}</span></div>`)
+  const comments = state.comments || [];
+  const list = document.getElementById("familyComments");
+
+  if (!comments.length) {
+    list.innerHTML = `<div class="empty-state">아직 가족 코멘트가 없어요.</div>`;
+    return;
+  }
+
+  list.innerHTML = comments
+    .map(
+      (comment) => `
+        <div class="comment">
+          <div>
+            <strong>${comment.name}</strong>
+            <span>${comment.text}</span>
+          </div>
+          <button type="button" data-comment-delete-id="${comment.id}" aria-label="코멘트 삭제">×</button>
+        </div>
+      `,
+    )
     .join("");
 }
 
@@ -404,6 +425,34 @@ function deleteEntry(id) {
   if (!confirm(`"${item.memo}" 기록을 삭제할까요?`)) return;
 
   state.transactions = state.transactions.filter((transaction) => transaction.id !== id);
+  saveState();
+  render();
+}
+
+function addComment(event) {
+  event.preventDefault();
+  const author = document.getElementById("commentAuthor").value;
+  const input = document.getElementById("commentText");
+  const textValue = input.value.trim();
+
+  if (!textValue) return;
+
+  state.comments = [
+    ...(state.comments || []),
+    {
+      id: uid(),
+      name: author,
+      text: textValue,
+      date: new Date().toISOString(),
+    },
+  ];
+  input.value = "";
+  saveState();
+  render();
+}
+
+function deleteComment(id) {
+  state.comments = (state.comments || []).filter((comment) => comment.id !== id);
   saveState();
   render();
 }
@@ -585,12 +634,17 @@ document.getElementById("copyShareBtn").addEventListener("click", makeShare);
 document.getElementById("notifyBtn").addEventListener("click", () => setView("family"));
 document.getElementById("settingsForm").addEventListener("submit", saveSettings);
 document.getElementById("saveQuickGoalBtn").addEventListener("click", saveQuickGoal);
+document.getElementById("commentForm").addEventListener("submit", addComment);
 document.getElementById("transactionList").addEventListener("click", (event) => {
   const editButton = event.target.closest("[data-edit-id]");
   const deleteButton = event.target.closest("[data-delete-id]");
 
   if (editButton) openEditEntry(editButton.dataset.editId);
   if (deleteButton) deleteEntry(deleteButton.dataset.deleteId);
+});
+document.getElementById("familyComments").addEventListener("click", (event) => {
+  const deleteButton = event.target.closest("[data-comment-delete-id]");
+  if (deleteButton) deleteComment(deleteButton.dataset.commentDeleteId);
 });
 
 render();
