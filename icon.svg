@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#79e1bd"/>
+  <circle cx="116" cy="132" r="35" fill="#ffc83d"/>
+  <path d="M94 326c88 42 220 42 324 0" fill="none" stroke="#ef7353" stroke-width="56" stroke-linecap="round"/>
+  <path d="M139 322c76 28 177 28 250 0" fill="none" stroke="#fff3d4" stroke-width="10" stroke-linecap="round"/>
+  <g transform="translate(134 186)">
+    <path d="M26 104c52 24 142 24 194 0 13-6 26 4 20 17-17 41-211 41-228 0-6-13 7-23 14-17z" fill="#27505a"/>
+    <path d="M37 102c48 16 132 16 180 0" fill="none" stroke="#ffcf3b" stroke-width="25" stroke-linecap="round"/>
+    <circle cx="72" cy="149" r="22" fill="#243447"/>
+    <circle cx="176" cy="149" r="22" fill="#243447"/>
+    <circle cx="72" cy="149" r="8" fill="#fff"/>
+    <circle cx="176" cy="149" r="8" fill="#fff"/>
+  </g>
+  <text x="256" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#162033">쑥쑥</text>
+</svg>
