@@ -1,0 +1,17 @@
+{
+  "name": "용돈 쑥쑥",
+  "short_name": "용돈쑥쑥",
+  "description": "가족이 함께 보는 아이 용돈관리 앱",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7fff9",
+  "theme_color": "#79e1bd",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
