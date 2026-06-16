@@ -43,6 +43,7 @@
             <span>용돈 쑥쑥</span>
             <button class="icon-btn" id="notifyBtn" aria-label="가족 공유">!</button>
           </div>
+          <div class="role-pill" id="rolePill">아이 입력 모드</div>
 
           <section class="view active" id="homeView">
             <div class="mood-card">
@@ -172,6 +173,12 @@
               </div>
             </header>
             <form class="settings-form" id="settingsForm">
+              <label>사용 모드
+                <select id="settingRole">
+                  <option value="child">아이 입력 모드</option>
+                  <option value="parent">부모 확인 모드</option>
+                </select>
+              </label>
               <label>아이 이름<input name="child" id="settingChild" /></label>
               <label>갖고 싶은 것<input name="goal" id="settingGoal" /></label>
               <label>목표 금액<input name="amount" id="settingAmount" type="number" min="1000" step="1000" /></label>
@@ -193,6 +200,7 @@
             <button class="tab" data-view="history">내역</button>
             <button class="tab" data-view="insight">분석</button>
             <button class="tab" data-view="family">공유</button>
+            <button class="tab" data-view="settings">설정</button>
           </div>
         </section>
 

@@ -192,6 +192,17 @@ button {
   top: 5px;
 }
 
+.role-pill {
+  width: fit-content;
+  margin: 0 auto 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #0b7669;
+  background: #dff8ee;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .icon-btn {
   width: 32px;
   height: 32px;
@@ -734,7 +745,7 @@ button {
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 4px;
   padding: 10px 12px 18px;
   background: #fff;
@@ -782,6 +793,10 @@ textarea {
   border-bottom: 1px solid var(--line);
   align-items: center;
   position: relative;
+}
+
+.row.readonly {
+  grid-template-columns: 42px minmax(0, 1fr) 70px;
 }
 
 .row .row-actions {
@@ -1059,6 +1074,17 @@ dialog::backdrop {
 .row-actions button.delete {
   color: #9f2a12;
   background: #ffe1d2;
+}
+
+body[data-role="parent"] .goal-editor-card,
+body[data-role="parent"] .action-stack,
+body[data-role="parent"] .quick-input,
+body[data-role="parent"] [data-open-entry] {
+  display: none;
+}
+
+body[data-role="parent"] .balance-row {
+  display: block;
 }
 
 @media (max-width: 760px) {

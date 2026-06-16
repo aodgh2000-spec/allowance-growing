@@ -1,6 +1,7 @@
 const storageKey = "allowance-growing-v2";
 const firebaseConfigKey = "allowance-growing-firebase-config";
 const familyCodeKey = "allowance-growing-family-code";
+const roleKey = "allowance-growing-role";
 
 const defaults = {
   child: "관우",
@@ -98,6 +99,7 @@ function render() {
   value("settingGoal", state.goal);
   value("settingAmount", state.goalAmount);
   value("settingReward", state.reward);
+  value("settingRole", currentRole());
   value("quickGoalName", state.goal);
   value("quickGoalAmount", state.goalAmount);
   value("settingFamilyCode", currentFamilyCode());
@@ -110,6 +112,7 @@ function render() {
   renderCategories();
   renderComments();
   renderCloudStatus();
+  applyRoleMode();
 }
 
 function text(id, content) {
@@ -128,6 +131,20 @@ function currentFamilyCode() {
   const code = `RACE-${String(hashCode(state.child)).slice(0, 4)}`;
   localStorage.setItem(familyCodeKey, code);
   return code;
+}
+
+function currentRole() {
+  return localStorage.getItem(roleKey) || "child";
+}
+
+function isParentMode() {
+  return currentRole() === "parent";
+}
+
+function applyRoleMode() {
+  const parentMode = isParentMode();
+  document.body.dataset.role = parentMode ? "parent" : "child";
+  text("rolePill", parentMode ? "부모 확인 모드" : "아이 입력 모드");
 }
 
 function hashCode(textValue) {
@@ -212,19 +229,20 @@ function renderRaceStage(balance, expense, percent) {
 function renderTransactions() {
   const list = document.getElementById("transactionList");
   const items = [...state.transactions].sort((a, b) => b.date.localeCompare(a.date));
+  const actions = !isParentMode();
   if (!items.length) {
-    list.innerHTML = `<div class="empty-state">아직 기록이 없어요. 용돈을 받거나 쓴 뒤 직접 기록해 보세요.</div>`;
+    list.innerHTML = `<div class="empty-state">${isParentMode() ? "아직 아이가 기록한 내역이 없어요." : "아직 기록이 없어요. 용돈을 받거나 쓴 뒤 직접 기록해 보세요."}</div>`;
     return;
   }
 
   list.innerHTML = items
     .map(
       (item) => `
-        <article class="row">
+        <article class="row ${actions ? "" : "readonly"}">
           <small>${formatDate(item.date)}</small>
           <div><strong>${item.memo}</strong><small>${item.category}</small></div>
           <strong class="amount ${item.type}">${item.type === "income" ? "+" : "-"}${numberOnly(item.amount)}</strong>
-          <div class="row-actions">
+          <div class="row-actions" ${actions ? "" : "hidden"}>
             <button type="button" data-edit-id="${item.id}" aria-label="수정">✎</button>
             <button class="delete" type="button" data-delete-id="${item.id}" aria-label="삭제">×</button>
           </div>
@@ -330,6 +348,7 @@ function setView(view) {
 }
 
 function openEntry(type) {
+  if (isParentMode()) return;
   value("entryEditId", "");
   value("entryType", type);
   text("entryTitle", type === "income" ? "용돈 받기" : "용돈 쓰기");
@@ -340,6 +359,7 @@ function openEntry(type) {
 }
 
 function openEditEntry(id) {
+  if (isParentMode()) return;
   const item = state.transactions.find((transaction) => transaction.id === id);
   if (!item) return;
 
@@ -354,6 +374,7 @@ function openEditEntry(id) {
 
 function saveEntry(event) {
   event.preventDefault();
+  if (isParentMode()) return;
   const editId = document.getElementById("entryEditId").value;
   const item = {
     id: editId || uid(),
@@ -377,6 +398,7 @@ function saveEntry(event) {
 }
 
 function deleteEntry(id) {
+  if (isParentMode()) return;
   const item = state.transactions.find((transaction) => transaction.id === id);
   if (!item) return;
   if (!confirm(`"${item.memo}" 기록을 삭제할까요?`)) return;
@@ -387,6 +409,7 @@ function deleteEntry(id) {
 }
 
 function parseNaturalText() {
+  if (isParentMode()) return;
   const input = document.getElementById("naturalInput");
   const textValue = input.value.trim();
   const amount = Number((textValue.match(/(\d[\d,]*)\s*원?/) || [])[1]?.replaceAll(",", ""));
@@ -414,6 +437,7 @@ function guessCategory(textValue) {
 }
 
 function startVoice() {
+  if (isParentMode()) return;
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     value("naturalInput", "엄마한테 5000원 받았어");
@@ -514,6 +538,7 @@ async function syncToCloud() {
 
 function saveSettings(event) {
   event.preventDefault();
+  localStorage.setItem(roleKey, document.getElementById("settingRole").value);
   state.child = document.getElementById("settingChild").value.trim() || state.child;
   state.goal = document.getElementById("settingGoal").value.trim() || state.goal;
   state.goalAmount = Number(document.getElementById("settingAmount").value) || state.goalAmount;
@@ -532,6 +557,7 @@ function saveSettings(event) {
 }
 
 function saveQuickGoal() {
+  if (isParentMode()) return;
   const nextGoal = document.getElementById("quickGoalName").value.trim();
   const nextAmount = Number(document.getElementById("quickGoalAmount").value);
 
