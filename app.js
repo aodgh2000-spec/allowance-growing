@@ -198,8 +198,6 @@ function renderRaceStage(balance, expense, percent) {
   }
 
   raceCard.dataset.stage = stage;
-  text("stageNumber", number);
-  text("stageLabel", label);
   if (runner) {
     runner.style.setProperty("--runner-left", `${Math.max(8, Math.min(78, left))}%`);
     runner.style.setProperty("--runner-top", `${Math.max(18, Math.min(76, top))}%`);

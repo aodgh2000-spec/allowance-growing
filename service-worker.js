@@ -1,13 +1,13 @@
-const cacheName = "allowance-growing-v4";
+const cacheName = "allowance-growing-v6";
 const filesToCache = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.json",
-  "./assets/icon.svg",
-  "./assets/maze.png",
-  "./assets/mouse.png",
+  "./icon.svg",
+  "./maze.png",
+  "./mouse.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -15,6 +15,14 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  const isImage = url.pathname.endsWith(".png") || url.pathname.endsWith(".svg");
+
+  if (isImage) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
 });
 
